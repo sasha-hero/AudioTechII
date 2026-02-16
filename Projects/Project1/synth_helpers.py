@@ -74,9 +74,27 @@ def fm_synth(carrier_type, carrier_freq, mod_index, mod_ratio, dur, fs=44100, am
     Returns:
     The function should return a numpy array
     sig (numpy array) = frequency modulated signal
-    """
-    sig = gen_wave(carrier_type, carrier_freq, dur, fs=fs)
-    return sig
+    """ 
+    modfreq = carrier_freq*mod_ratio
+    t = np.arange(0, dur, 1/fs)
+
+    mod = gen_wave(modulator_type, modfreq, dur, fs=fs)
+    mod = mod/ np.max(np.abs(mod))
+    
+    phase = 2*np.pi*carrier_freq*t + mod_index * mod
+
+    if carrier_type == 'sine':
+        sig = np.sin(phase)
+    elif carrier_type == 'square':
+        sig = np.sign(np.sin(phase))
+    elif carrier_type == 'saw':
+        sig = 2 * (phase/(2 * np.pi) % 1)- 1
+    elif carrier_type == 'triangle':
+        sig = 2 * np.abs(2*(phase/(2 * np.pi) % 1)- 1)- 1
+    else:
+        raise ValueError("carrier type must be 'sine' 'square' 'saw' or 'triangle'")
+
+    return amp*sig
 
 # TODO: Replace the code below with your implementation of a AM synthesis
 def am_synth(carrier_type, carrier_freq, mod_depth, mod_ratio, dur, fs=44100, amp=1, modulator_type='sine'):
@@ -95,8 +113,20 @@ def am_synth(carrier_type, carrier_freq, mod_depth, mod_ratio, dur, fs=44100, am
     The function should return a numpy array
     sig (numpy array) = amplitude modulated signal
     """
-    sig = gen_wave(carrier_type, carrier_freq, dur, fs=fs)
+    if mod_ratio == 0:
+        raise ValueError("mod_ratio cannot be 0")
+    
+    carrier = gen_wave(carrier_type, carrier_freq, dur, fs=fs)
+    modfreq = carrier_freq/mod_ratio
+    
+    mod = gen_wave(modulator_type, modfreq, dur, fs=fs)
+    mod = mod/ np.max(np.abs(mod))
+
+    env = 1+mod_depth*mod
+    sig = amp*env*carrier
+
     return sig
+
 
 
 # TODO: Complete at least one of the functions below: filter, reverb, delay.

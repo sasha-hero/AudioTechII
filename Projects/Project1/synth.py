@@ -55,30 +55,28 @@ def params_CLI():
     synth_params['fs'] = int(input("Output sample rate (max 48000): "))
 
     print("\nChoose a playback mode:")
-    print("1 - Preset 1: MyPresetName")
-    print("2 - Preset 2: MyPresetName")
+    print("1 - Preset 1: Pad")
+    print("2 - Preset 2: Bass")
     print("3 - Custom sound")
     mode = int(input("> "))
 
     if mode == 1:
-        # TODO: UPDATE WITH YOUR PRESET PARAMS
+        synth_params['osc_type'] = 'triangle'
+        synth_params['modulation'] = 'fm'
+        synth_params['mod_ratio'] = 2.0
+        synth_params['mod_index'] = 2.5
+        synth_params['reverb'] = True
+        synth_params['adsr'] = (85, 40, 0.7, 80)
 
-        synth_params['osc_type'] = 'sine'
-        synth_params['modulation'] = 'none'
-        synth_params['mod_ratio'] = 0
-        synth_params['mod_index'] = 0
-        synth_params['reverb'] = False
-        synth_params['adsr'] = (60, 20, 0.8, 20)
-    
     elif mode == 2:
         # TODO: UPDATE WITH YOUR PRESET PARAMS
 
         synth_params['osc_type'] = 'sine'
-        synth_params['modulation'] = 'none'
-        synth_params['mod_ratio'] = 0
-        synth_params['mod_index'] = 0
+        synth_params['modulation'] = 'fm'
+        synth_params['mod_ratio'] = 1.0
+        synth_params['mod_index'] = 6.0
         synth_params['reverb'] = False
-        synth_params['adsr'] = (50, 10, 0.8, 10)
+        synth_params['adsr'] = (5, 25, 0.8, 15)
 
     elif mode == 3:
 
@@ -172,7 +170,7 @@ def synth(note_list, synth_params):
         # Though I'm not a huge fan of appending/concatenating, it is okay for this assignment. 
         # If you choose to pre-allocate (correctly), you'll recieve extra credit.
         song = np.concatenate((song, synth_note))
-   
+
     # TODO: Update this. This is just an example for reading into the synth_params dictionary
     if synth_params['reverb']: # remember reverb will be true/false in my example
         song = synth_helpers.reverb(song, 'file_path')
